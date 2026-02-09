@@ -1,40 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>For Anvi 💖</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chocolate Quest 🍫</title>
+
+<style>
+*{box-sizing:border-box;font-family:Arial, sans-serif}
+body{
+  margin:0;
+  background:#120b08;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* PAGES */
+.page{
+  position:absolute;
+  inset:0;
+  padding:20px;
+  text-align:center;
+  opacity:0;
+  transform:scale(1.02);
+  transition:opacity .7s ease, transform .7s ease;
+  pointer-events:none;
+}
+.page.active{
+  opacity:1;
+  transform:scale(1);
+  pointer-events:auto;
+}
+
+/* BUTTON */
+button{
+  padding:12px 22px;
+  border:none;
+  border-radius:25px;
+  background:#ff7a7a;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* CHOCOS */
+.choco{
+  position:absolute;
+  font-size:32px;
+  cursor:pointer;
+  animation:pop .4s ease;
+}
+@keyframes pop{
+  from{transform:scale(0)}
+  to{transform:scale(1)}
+}
+
+/* LETTER */
+.scroll-box{
+  height:70vh;
+  overflow-y:auto;
+  padding:20px;
+  border:1px solid #333;
+}
+
+.hidden{display:none}
+
+/* TRANSITION TEXT */
+.fadeText{
+  animation:fadeIn 1.2s ease forwards;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>Hey Anvi 🌸</h1>
+<!-- MUSIC -->
+<audio id="bgMusic" src="bg.mp3" preload="auto"></audio>
 
-  <p>
-    Kabhi kabhi life me kuch log bina kuch kahe hi sab kuch keh jaate hain.
-    Tum bhi unhi logon me se ho. Tumhari presence me ek alag hi sukoon hai,
-    jaise sab theek ho jaata ho, chahe din kitna bhi mushkil kyun na ho.
-  </p>
-
-  <p>
-    Ye page sirf ek message nahi hai, ye ek feeling hai. Ek reminder ki tum
-    important ho. Tumhari value kisi comparison se kam nahi hoti. Tum jaisi ho,
-    wahi kaafi ho.
-  </p>
-
-  <p>
-    Agar kabhi self-doubt aaye, toh bas itna yaad rakhna — tum strong ho,
-    tum capable ho, aur tumhare sapne valid hain. Dheere hi sahi,
-    par tum apni jagah zaroor banaogi.
-  </p>
-
-  <a href="page2.html" class="btn">Next Page ➜</a>
+<!-- PAGE 1 -->
+<div class="page active" id="page1">
+<h2>Find all chocolates 🍫</h2>
+<p>Unlock something sweet 👀</p>
 </div>
 
-<audio autoplay loop>
-  <source src="song.mp3" type="audio/mpeg">
-</audio>
+<!-- PAGE 2 -->
+<div class="page" id="page2">
+<h2>Aaj tum kis chocolate jaisi ho?</h2>
+<button onclick="selectMood()">🍫 Dark – Strong & classy</button><br><br>
+<button onclick="selectMood()">🍫 Milk – Soft & sweet</button><br><br>
+<button onclick="selectMood()">🍫 White – Cute & rare</button>
+</div>
 
-<script src="script.js"></script>
+<!-- PAGE 3 -->
+<div class="page" id="page3">
+<h2>A little chocolate letter 💌</h2>
+<div class="scroll-box" id="letter">
+<p>Some chocolates are sweet…</p>
+<p>Some are rare…</p>
+<p>And some are impossible to forget.</p>
+<p style="margin-top:300px;font-weight:bold">
+You’re not just my favorite chocolate.<br>
+You’re the reason I crave sweetness 🍫❤️
+</p>
+</div>
+<p id="unlockText" class="hidden">
+<br>
+<button onclick="unlockEdit()">Unlock Surprise 🎁</button>
+</p>
+</div>
+
+<!-- TRANSITION -->
+<div class="page" id="transition">
+<h2 class="fadeText">One last thing…</h2>
+<p class="fadeText" style="animation-delay:.8s">Made just for you 💗</p>
+<p class="fadeText" style="animation-delay:1.6s">Don’t blink 👀</p>
+</div>
+
+<!-- FINAL EDIT -->
+<div class="page" id="final">
+<video width="100%" controls autoplay>
+<source src="edit.mp4" type="video/mp4">
+</video>
+</div>
+
+<script>
+let found = 0;
+const music = document.getElementById("bgMusic");
+
+/* START MUSIC ON FIRST TAP */
+document.addEventListener("click",()=>{
+  if(music.paused) music.play();
+},{once:true});
+
+/* PAGE SWITCH */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* PAGE 1 CHOCOLATES */
+const p1=document.getElementById("page1");
+for(let i=0;i<4;i++){
+  let c=document.createElement("div");
+  c.innerHTML="🍫";
+  c.className="choco";
+  c.style.top=Math.random()*70+"%";
+  c.style.left=Math.random()*80+"%";
+  c.onclick=()=>{
+    c.remove();found++;
+    if(found===4) showPage("page2");
+  };
+  p1.appendChild(c);
+}
+
+function selectMood(){
+  showPage("page3");
+}
+
+/* SCROLL DETECT */
+const letter=document.getElementById("letter");
+letter.addEventListener("scroll",()=>{
+  if(letter.scrollTop + letter.clientHeight >= letter.scrollHeight){
+    document.getElementById("unlockText").classList.remove("hidden");
+  }
+});
+
+/* MUSIC FADE OUT */
+function fadeOutMusic(){
+  let fade = setInterval(()=>{
+    if(music.volume > 0.05){
+      music.volume -= 0.05;
+    }else{
+      music.pause();
+      music.volume = 1;
+      clearInterval(fade);
+    }
+  },120);
+}
+
+/* UNLOCK EDIT */
+function unlockEdit(){
+  fadeOutMusic();
+  showPage("transition");
+
+  setTimeout(()=>{
+    showPage("final");
+  },3600);
+}
+</script>
+
 </body>
 </html>
